@@ -1,53 +1,50 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+import { COLOR_SCHEMES, type ColorScheme } from './colorScheme';
+import { palette } from './tokens';
 
-import { Platform } from 'react-native';
+export interface SemanticColors {
+  primary: string;
+  onPrimary: string;
+  danger: string;
+  success: string;
+  warning: string;
+  videoSurface: string;
+  background: string;
+  surface: string;
+  surfaceMuted: string;
+  border: string;
+  text: string;
+  textMuted: string;
+  icon: string;
+}
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+const shared = {
+  primary: palette.primary[600],
+  onPrimary: palette.neutral[0],
+  danger: palette.danger,
+  success: palette.success,
+  warning: palette.warning,
+  videoSurface: palette.neutral[900],
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+export const semanticColors: Record<ColorScheme, SemanticColors> = {
+  [COLOR_SCHEMES.LIGHT]: {
+    ...shared,
+    background: palette.neutral[50],
+    surface: palette.neutral[0],
+    surfaceMuted: palette.neutral[100],
+    border: palette.neutral[200],
+    text: palette.neutral[900],
+    textMuted: palette.neutral[500],
+    icon: palette.neutral[400],
   },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+  [COLOR_SCHEMES.DARK]: {
+    ...shared,
+    background: palette.neutral[950],
+    surface: palette.neutral[900],
+    surfaceMuted: palette.neutral[850],
+    border: palette.neutral[800],
+    text: palette.neutral[50],
+    textMuted: palette.neutral[400],
+    icon: palette.neutral[400],
   },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+};
