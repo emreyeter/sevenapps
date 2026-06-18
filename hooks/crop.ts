@@ -60,16 +60,29 @@ export type TrimVideoParams = {
   description: string;
 };
 
-async function generateThumbnail(videoUri: string, id: string): Promise<string | null> {
-  try {
-    const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri, {
-      time: 0,
-      quality: 0.7,
-    });
-    return persistThumbnailFile(uri, id);
-  } catch {
-    return null;
+async function generateThumbnail(
+  videoUri: string,
+  id: string,
+  durationMs: number,
+): Promise<string | null> {
+  const midMs = durationMs > 0 ? Math.floor(durationMs / 2) : 0;
+  const candidateTimes = Array.from(
+    new Set([Math.min(200, midMs || 200), midMs, 0]),
+  );
+
+  for (const time of candidateTimes) {
+    try {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri, {
+        time,
+        quality: 0.7,
+      });
+      return persistThumbnailFile(uri, id);
+    } catch {
+      // Try the next candidate time; some codecs fail to decode at exactly 0.
+    }
   }
+
+  return null;
 }
 
 export function useTrimVideo() {
@@ -84,7 +97,11 @@ export function useTrimVideo() {
       const { uri: trimmedUri } = await trimVideo({ uri: sourceUri, start, end });
 
       const persistedUri = persistVideoFile(trimmedUri, id);
-      const thumbnailUri = await generateThumbnail(persistedUri, id);
+      const thumbnailUri = await generateThumbnail(
+        persistedUri,
+        id,
+        Math.round(segmentSec * 1000),
+      );
 
       return api.videos.create({
         id,
